@@ -426,16 +426,27 @@ const static I2C_ARRAY Sensor_8m_30fps_init_table_4lane_linear[] = {
     { 0x300A, 0x42 }, // CPWAIT_TIME[9:0]
     { 0x3024, 0xCA }, // VMAX (line number 0x8CA)
     { 0x3025, 0x08 }, //
-    { 0x3028, 0xFE }, // HMAX (clock number 0x3FE)
+    { 0x3028, 0xB0 }, // HMAX (clock number 0x3FE)//
     { 0x3029, 0x03 }, //
     { 0x3031, 0x00 }, // ADBIT (10bit)
-    { 0x3033, 0x05 }, // SYS_MODE (891Mbps)
+
+    { 0x3032, 0x00 }, //ADBIT (10bit) , was 12bit { 0x3032, 0x01 }
+
+    //{ 0x3033, 0x05 }, // SYS_MODE (891Mbps)
+    { 0x3033, 0x08 }, // SYS_MODE[3:0] 1440
+
     { 0x3050, 0x08 }, // SHR0[19:0]
     { 0x30C1, 0x00 }, // XVS_DRV[1:0]
     { 0x3116, 0x23 }, // INCKSEL2
-    { 0x3118, 0xC6 }, // INCKSEL3
-    { 0x311A, 0xE7 }, // INCKSEL4
-    { 0x311E, 0x23 }, // INCKSEL5
+  //{ 0x3118, 0xC6 }, // INCKSEL3
+    { 0x3118, 0xA5 }, // INCKSEL3[10:0]        
+
+    //{ 0x311A, 0xE7 }, // INCKSEL4
+    { 0x311A, 0xE7 }, // INCKSEL4[10:0]
+
+    //{ 0x311E, 0x23 }, // INCKSEL5
+    { 0x311E, 0x23 }, // INCKSEL5[7:0]
+
     { 0x32D4, 0x21 }, // -
     { 0x32EC, 0xA1 }, // -
     { 0x3452, 0x7F }, // -
@@ -510,7 +521,12 @@ const static I2C_ARRAY Sensor_8m_30fps_init_table_4lane_linear[] = {
     { 0x3BCA, 0xBD }, // -
     { 0x4004, 0xC0 }, // TXCLKESC_FREQ[15:0]
     { 0x4005, 0x06 }, //
-    { 0x400C, 0x00 }, // INCKSEL6
+    { 0x4004, 0xC0 }, // TXCLKESC_FREQ[15:0]
+    { 0x4005, 0x06 }, //
+    //{ 0x400C, 0x00 }, // INCKSEL6
+    { 0x400C, 0x01 }, // INCKSEL6
+
+    /*
     { 0x4018, 0x7F }, // TCLKPOST
     { 0x401A, 0x37 }, // TCLKPREPARE
     { 0x401C, 0x37 }, // TCLKTRAIL
@@ -521,7 +537,19 @@ const static I2C_ARRAY Sensor_8m_30fps_init_table_4lane_linear[] = {
     { 0x4024, 0x3F }, // THSTRAIL
     { 0x4026, 0x5F }, // THSEXIT
     { 0x4028, 0x2F }, // TLPX
-    { 0x4074, 0x01 }, // INCKSEL7
+    */
+    { 0x4018, 0xA7 }, // TCLKPOST[15:0]
+    { 0x401A, 0x57 }, // TCLKPREPARE[15:0]
+    { 0x401C, 0x5F }, // TCLKTRAIL[15:0]
+    { 0x401E, 0x97 }, // TCLKZERO[15:0]
+    { 0x4020, 0x5F }, // THSPREPARE[15:0]
+    { 0x4022, 0xAF }, // THSZERO[15:0]
+    { 0x4024, 0x5F }, // THSTRAIL[15:0]
+    { 0x4026, 0x9F }, // THSEXIT[15:0]
+    { 0x4028, 0x4F }, // TLPX[15:0]
+
+    //{ 0x4074, 0x01 }, // INCKSEL7
+    { 0x4074, 0x00 }, // INCKSEL7
     { 0xFFFF, 0x24 },
     { 0x3002, 0x00 }, // Master mode start
     { 0xFFFF, 0x10 },
