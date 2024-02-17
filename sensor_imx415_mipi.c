@@ -93,6 +93,8 @@ SENSOR_DRV_ENTRY_IMPL_BEGIN_EX(IMX415_HDR);
 #define Preview_MCLK_SPEED CUS_CMU_CLK_27MHZ // CUS_CMU_CLK_24MHZ //CUS_CMU_CLK_37P125MHZ//CUS_CMU_CLK_27MHZ
 #define Preview_MCLK_SPEED_HDR_DOL CUS_CMU_CLK_27MHZ
 
+
+
 ////////////////////////////////////
 // I2C Info                       //
 ////////////////////////////////////
@@ -302,7 +304,7 @@ static int pCus_SetAEUSecsHDR_DOL_LEF(ms_cus_sensor* handle, u32 us);
 //                                                           //
 ///////////////////////////////////////////////////////////////
 
-// 3840x2160@20fps
+// 3840x2160@20fps 
 const static I2C_ARRAY Sensor_8m_20fps_init_table_4lane_linear[] = {
     /*
     IMX415-AAQR All-pixel scan CSI-2_4lane 27MHz AD:10bit Output:12bit 594Mbps Master Mode 20fps Integration Time 49.86ms
@@ -415,7 +417,7 @@ const static I2C_ARRAY Sensor_8m_20fps_init_table_4lane_linear[] = {
     { 0x3000, 0x00 }, // Operating
 };
 
-// 3840x2160@30fps
+// 3840x2160@30fps CHANGED for HIGHER FPS 37 possible
 const static I2C_ARRAY Sensor_8m_30fps_init_table_4lane_linear[] = {
     /*
     IMX415-AAQR All-pixel scan CSI-2_4lane 27MHz AD:10bit Output:12bit 891Mbps Master Mode 30fps Integration Time 33.31ms
@@ -426,14 +428,16 @@ const static I2C_ARRAY Sensor_8m_30fps_init_table_4lane_linear[] = {
     { 0x300A, 0x42 }, // CPWAIT_TIME[9:0]
     { 0x3024, 0xCA }, // VMAX (line number 0x8CA)
     { 0x3025, 0x08 }, //
-    { 0x3028, 0xB0 }, // HMAX (clock number 0x3FE)//
+    { 0x3028, 0xB0 }, // HMAX (clock number 0x3FE)// 3B0 = 35fps   //0x390 = 36fps at 10bit
     { 0x3029, 0x03 }, //
     { 0x3031, 0x00 }, // ADBIT (10bit)
 
-    { 0x3032, 0x00 }, //ADBIT (10bit) , was 12bit { 0x3032, 0x01 }
+    { 0x3032, 0x01 }, // 0x00 ADBIT (10bit) ; was 12bit { 0x3032, 0x01 }   ; 
 
     //{ 0x3033, 0x05 }, // SYS_MODE (891Mbps)
     { 0x3033, 0x08 }, // SYS_MODE[3:0] 1440
+
+    { 0x3034, 0x08 }, // SYS_MODE[3:0] 1440
 
     { 0x3050, 0x08 }, // SHR0[19:0]
     { 0x30C1, 0x00 }, // XVS_DRV[1:0]
@@ -674,7 +678,7 @@ const static I2C_ARRAY Sensor_2m_60fps_init_table_4lane_linear[] = {
     { 0x3000, 0x00 }, // Operating
 };
 
-// 1920x1080@90fps
+// 1920x1080@90fps BINNING mode
 const static I2C_ARRAY Sensor_2m_90fps_init_table_4lane_linear[] = {
     /*
     IMX415-AAQR 2/2-line binning CSI-2_4lane 27MHz AD:10bit Output:12bit 891Mbps Master Mode 90fps Integration Time 11.1ms
@@ -688,9 +692,10 @@ const static I2C_ARRAY Sensor_2m_90fps_init_table_4lane_linear[] = {
     { 0x3022, 0x01 }, // ADDMODE (binning 2/2)
     { 0x3024, 0xCA }, // VMAX (line number 0x8CA)
     { 0x3025, 0x08 }, //
-    { 0x3028, 0x6D }, // HMAX (clock number 0x16D)
-    { 0x3029, 0x01 }, //
-    { 0x3031, 0x00 }, // ADBIT (10bit)
+    { 0x3028, 0x26 }, // HMAX (clock number 0x16D) , 0x226
+    { 0x3029, 0x02 }, //
+    { 0x3031, 0x00 }, // ADBIT in (10bit) 0x00=10bit ; 0x01=12bit
+    { 0x3032, 0x01 }, // ADBIT out (12it) 0x00=10bit ; 0x01=12bit    
     { 0x3033, 0x05 }, // SYS_MODE (891Mbps)
     { 0x3050, 0x08 }, // SHR0[19:0]
     { 0x30C1, 0x00 }, // XVS_DRV[1:0]
@@ -719,7 +724,7 @@ const static I2C_ARRAY Sensor_2m_90fps_init_table_4lane_linear[] = {
     { 0x36D8, 0x71 }, // -
     { 0x36DA, 0x8C }, // -
     { 0x36DB, 0x00 }, // -
-    { 0x3701, 0x00 }, // ADBIT1[7:0]
+    { 0x3701, 0x00 }, // ADBIT1[7:0] was 0x00 for 10bit
     { 0x3724, 0x02 }, // -
     { 0x3726, 0x02 }, // -
     { 0x3732, 0x02 }, // -
@@ -2087,6 +2092,8 @@ static int pCus_init_8m_30fps_mipi4lane_linear(ms_cus_sensor* handle)
     if (pCus_CheckSensorProductID(handle) == FAIL) {
         return FAIL;
     }
+    
+    //SENSOR_EMSG("Sensor IMX415 TEST MODE Init test...\n");        
 
     for (i = 0; i < ARRAY_SIZE(Sensor_8m_30fps_init_table_4lane_linear); i++) {
         if (Sensor_8m_30fps_init_table_4lane_linear[i].reg == 0xffff) {
@@ -2436,14 +2443,16 @@ static int pCus_SetVideoRes(ms_cus_sensor* handle, u32 res_idx)
         handle->data_prec = CUS_DATAPRECISION_12;
         break;
     case 1:
+    
         handle->video_res_supported.ulcur_res = 1;
         handle->pCus_sensor_init = pCus_init_8m_30fps_mipi4lane_linear;
-        vts_30fps = 2250;
+        vts_30fps = 2250;//2250
         params->expo.vts = vts_30fps;
         params->expo.fps = 30;
         Preview_line_period = 14800; // 33.3ms/2250 = 14800ns;
-        handle->data_prec = CUS_DATAPRECISION_12;
+        handle->data_prec = CUS_DATAPRECISION_12;//CUS_DATAPRECISION_10;
         break;
+
     case 2:
         handle->video_res_supported.ulcur_res = 2;
         handle->pCus_sensor_init = pCus_init_2m_60fps_mipi4lane_linear;
@@ -2456,10 +2465,10 @@ static int pCus_SetVideoRes(ms_cus_sensor* handle, u32 res_idx)
     case 3:
         handle->video_res_supported.ulcur_res = 3;
         handle->pCus_sensor_init = pCus_init_2m_90fps_mipi4lane_linear;
-        vts_30fps = 2250;
+        vts_30fps = 2250;// not ok 1125
         params->expo.vts = vts_30fps;
-        params->expo.fps = 90;
-        Preview_line_period = 4933; // 11.1ms/2250 = 4933ns;
+        params->expo.fps = 60;//90;
+        Preview_line_period = 14800;// 7377;//4933; // 11.1ms/2250 = 4933ns;
         handle->data_prec = CUS_DATAPRECISION_12;
         break;
     case 4:
