@@ -1,13 +1,13 @@
 # Higher FPS imx415 sensor driver for Sigmastar SoCs.
 Sensor modes tweaked:
 
-### 3840 ×2160 full sensor scan mode boosted to 35fps
+### 3840 ×2160 full sensor scan 12bit colour mode boosted to 35fps
 set majestic to 1920x1080 fps: 30 to get 35fps
 
-### 1920x1080 cropped, max 60fps , zoom 2x
-WIP set majestic to 1920x1080 fps: 60 to get 60fps cropped mode, 
+### 1920x1080 cropped, max 60fps , zoom 2x, 12bit colour 
+ set majestic to 1920x1080 fps: 60 to get 60fps cropped mode, sensor reg setup ported from @milos
 
-### 1920x1080 binning at 60fps with decent sharpness
+### 1920x1080 binning at 60fps with decent sharpness, 12bit colour 
 set majestic to 1920x1080 fps: 90 to get binning mode at 60fps
 
 
