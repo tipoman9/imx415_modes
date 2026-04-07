@@ -37,3 +37,44 @@ find /home/home/src/ssc338/openipc-firmware/output/build/sigmastar-osdrv-sensors
 PATH="/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/bin:/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/sbin:/home/home/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin" PKG_CONFIG="/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/bin/pkg-config" PKG_CONFIG_SYSROOT_DIR="/" PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 PKG_CONFIG_LIBDIR="/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/lib/pkgconfig:/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/share/pkgconfig" BR_BINARIES_DIR=/home/home/src/ssc338/openipc-firmware/output/images KCFLAGS=-Wno-attribute-alias /usr/bin/make -j9 -C /home/home/src/ssc338/openipc-firmware/output/build/linux-custom HOSTCC="/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/bin/ccache /usr/bin/gcc -O2 -isystem /home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/include -L/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/lib -Wl,-rpath,/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/lib" ARCH=arm INSTALL_MOD_PATH=/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/target CROSS_COMPILE="/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/bin/arm-openipc-linux-gnueabihf-" WERROR=0 REGENERATE_PARSERS=1 DEPMOD=/home/home/src/ssc338/openipc-firmware/output/per-package/sigmastar-osdrv-sensors/host/sbin/depmod INSTALL_MOD_STRIP=1 SENSOR_VERSION=ssc338q-infinity6e INSTALL_MOD_DIR=sigmastar KSRC=/home/home/src/ssc338/openipc-firmware/output/build/linux-custom PWD=/home/home/src/ssc338/openipc-firmware/output/build/sigmastar-osdrv-sensors/sigmastar/sources/infinity6e M=/home/home/src/ssc338/openipc-firmware/output/build/sigmastar-osdrv-sensors/sigmastar/sources/infinity6e modules
 scp /home/home/src/ssc338/openipc-firmware/output/build/sigmastar-osdrv-sensors/sigmastar/sources/infinity6e/sensor/sensor_imx415_mipi.ko root@192.168.1.88:/lib/modules/4.9.84/sigmastar/sensor/sensor_imx415_mipi.ko
 ``````
+
+
+cd /home/home/src/imx415_sensor
+/home/home/src/msposd/toolchain/sigmastar-infinity6e/bin/arm-openipc-linux-gnueabihf-gcc \
+    -O2 -Wall -Wextra \
+    -o regscan \
+    regscan.c    
+
+scp -O  regscan root@192.168.1.88:/usr/bin/regscan
+
+## detect address
+i2cdetect -l
+i2c-1   i2c             Sstar I2C adapter 1                     I2C adapter
+i2c-2   i2c             Sstar I2C adapter 2                     I2C adapter
+i2c-0   i2c             Sstar I2C adapter 0                     I2C adapter
+root@openipc-ssc377qe:/usr/bin# i2cdetect -y -r 0
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+70: -- -- -- -- -- -- -- --
+root@openipc-ssc377qe:/usr/bin# i2cdetect -y -r 1
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+10: -- -- -- -- -- -- -- -- -- -- 1a -- -- -- -- --
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+70: -- -- -- -- -- -- -- --
+### run like this
+regscan -d /dev/i2c-1 -a 0x1a
+
+export PATH=/home/home/src/msposd/toolchain/sigmastar-infinity6e/bin:$PATH
+cd /home/home/src/imx415_sensor
+arm-openipc-linux-gnueabihf-gcc -O2 -Wall -Wextra -o regscan regscan.c
